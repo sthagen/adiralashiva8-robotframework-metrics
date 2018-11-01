@@ -135,7 +135,11 @@ head_content = """
    
     <!-- Bootstrap core Googleccharts -->
    <script src="https://www.gstatic.com/charts/loader.js" type="text/javascript"></script>
+   
    <script type="text/javascript">google.charts.load('current', {packages: ['corechart']});</script>
+   <script type = "text/javascript" src = "https://www.google.com/jsapi"></script>
+   <script type="text/javascript">google.charts.load('current', {packages: ['treemap']});</script>
+   
 
    <!-- Bootstrap core Datatable-->
 	<script src="https://code.jquery.com/jquery-3.3.1.js" type="text/javascript"></script>
@@ -517,7 +521,7 @@ dashboard_content="""
 				</div>
 
                 <hr></hr>
-				<div class="row">
+				<div class="row">					
 					<div class="col-md-12" style="background-color:white;height:450px;width:auto;border:groove;">
 						<span style="font-weight:bold">Top 10 Suite Performance(sec):</span>
                         <div id="suiteBarID" style="height:400px;width:auto;"></div>
@@ -529,6 +533,10 @@ dashboard_content="""
 					<div class="col-md-12" style="background-color:white;height:450px;width:auto;border:groove;">
 						<span style="font-weight:bold">Top 10 Keywords Performance(sec):</span>
                         <div id="keywordsBarID" style="height:400px;width:auto;"></div>
+					</div>
+					<div class="col-md-12" style="background-color:white;height:550px;width:auto;border:groove;">
+						<span style="font-weight:bold">Suite Failures: (proof-of-concept)</span>
+                        <div id="suiteTreeID" style="height:500px;width:auto;"></div>
 					</div>
 				</div>
 				<div class="row">
@@ -548,6 +556,7 @@ dashboard_content="""
 	createBarGraph('#tm',1,3,10,'testsBarID','Elapsed Time(s): ','Test'); 
 	createPieChart(%s,%s,'keywordChartID','Keywords Status:');
 	createBarGraph('#km',1,3,10,'keywordsBarID','Elapsed Time(s): ','Keyword');
+	createTreeMap('#sm',0,4,'suiteTreeID');
 	};
    </script>
    <script>
@@ -632,7 +641,7 @@ class SuiteResults(ResultVisitor):
             tbody.insert(0, table_tr)
 
             table_td = soup.new_tag('td',style="word-wrap: break-word;max-width: 250px; white-space: normal;cursor: pointer; text-decoration: underline; color:blue")
-            table_td.string = str(suite)
+            table_td.string = str(suite.name)
             table_td['onclick']="openInNewTab('%s%s%s','%s%s')"%(log_name,'#',suite.id,'#',suite.id)
             table_td['data-toggle']="tooltip"
             table_td['title']="Click to view '%s' logs"% suite
@@ -1100,7 +1109,49 @@ script_text="""
          }
 
     </script>
+	<script>
+       function createTreeMap(tableID,keyword_column,time_column,ChartID){
+		var status = [];		
+		var rows = $(tableID).dataTable().fnGetNodes();
+		var columns;
+		
+		status.push(['Suite Failures', 'Parent', 'Count']);
+		status.push(['Suite Failures', null, 0]);
+		for (var i = 0; i < rows.length; i++) {
+			
+			//status = [];
+			name_value = $(rows[i]).find('td'); 
+		  
+			time=($(name_value[Number(time_column)]).html()).trim();
+			keyword=($(name_value[Number(keyword_column)]).html()).trim();
+			status.push([keyword,'Suite Failures',parseFloat(time)]);
+		}
+		
+		
+		  var data = google.visualization.arrayToDataTable(status);
 
+          // Instantiate and draw the chart.
+          var chart = new google.visualization.TreeMap(document.getElementById(ChartID));
+		  
+		  var options = {
+            headerHeight: 0,
+            generateTooltip: showFullTooltip
+		  };
+		
+		google.visualization.events.addListener(chart, 'select', function() {
+			chart.setSelection([]);
+		});
+  
+          chart.draw(data, options);
+		  
+		  function showFullTooltip(row, size, value) {
+			return '<div style="background:#fd9; padding:3px; border-style:solid">' +
+				'<span style="font-family:Courier"><b>' + data.getValue(row, 0) +
+			'</b></br> Failures:' + data.getValue(row, 2) + '</span><br>';
+		  }
+        }
+
+    </script>
  <script>
   function executeDataTable(tabname,sortCol) {
     var fileTitle;
