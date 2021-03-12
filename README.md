@@ -1,6 +1,6 @@
 # Robot Framework Metrics Report
 
-Creates HTML Metrics report based on robotframework output.xml.
+Creates awesome HTML (dashboard view) report by parsing robotframework output.xml file
 
 [![PyPI version](https://badge.fury.io/py/robotframework-metrics.svg)](https://badge.fury.io/py/robotframework-metrics)
 [![Downloads](https://pepy.tech/badge/robotframework-metrics)](https://pepy.tech/project/robotframework-metrics)
@@ -10,7 +10,9 @@ Creates HTML Metrics report based on robotframework output.xml.
 
 ---
  - __Sample Report__ [link](https://robotmetrics.netlify.com/)
- - What's new in __v3.1.2_ [link](https://github.com/adiralashiva8/robotframework-metrics/releases/tag/v3.1.2)
+
+ - Whats new in __v3.2.1__ [link](https://github.com/adiralashiva8/robotframework-metrics/releases/tag/v3.2.1)
+
  - Source Code used to parse output.xml in metrics report [link](https://adiralashivaprasad.blogspot.com/2019/01/how-to-get-suite-test-and-keyword.html)
 
 ---
@@ -18,56 +20,57 @@ Creates HTML Metrics report based on robotframework output.xml.
 #### How it Works:
 
 1. Read output.xml file using robotframework API
+
 2. Get Suite, Test Case , Keyword , Status and Elapsed time values
+
 3. Convert data to html report using Beautifulsoup
 
 ---
 
 #### How to use in project:
 
-1. Install robotmetrics 
+__Step 1__ Install robotmetrics 
 
-    > Case 1: Using pip
-    ```
-    pip install robotframework-metrics==3.1.2
-    ```
-    > Case 2: Using setup.py (clone project and run command within root)
-    ```
-    python setup.py install
-    ```
-    > Case 3: For latest changes use following command (pre-release or changes in master)
-    ```
-    pip install git+https://github.com/adiralashiva8/robotframework-metrics
-    ```
+   > Case 1: Using pip
+   ```
+   pip install robotframework-metrics==3.2.1
+   ```
+   > Case 2: Using setup.py (clone project and run command within root)
+   ```
+   python setup.py install
+   ```
+   > Case 3: For latest changes use following command (pre-release or changes in master)
+   ```
+   pip install git+https://github.com/adiralashiva8/robotframework-metrics
+   ```
 
-2. Execute robotmetrics command to generate report
+__Step 2__ Execute robotmetrics command to generate report
 
-    > Case 1: No change in output.xml, log.html file name's and user is in same folder
-    ```
-    robotmetrics
-    ```
-    > Case 2: Change in output.xml, log.html file name's And .xml and .html files are under 'Result' folder
-    ```
-    robotmetrics --inputpath ./Result/ --output "output1.xml" --log "log1.html"
-    ```
-    robotframework-metrics can parse multiple xmls at a time. Following is the command
-    ```
-    robotmetrics --inputpath ./Result/ --output "output1.xml,output2.xml" --log "log1.html"
-    ```
-    
-    > For more info on command line options use:
+   > Case 1: No change in output.xml, log.html file name's and user is in same folder
+   ```
+   robotmetrics
+   ```
+   > Case 2: Change in output.xml, log.html file name's And .xml and .html files are under 'Result' folder
+   ```
+   robotmetrics --inputpath ./Result/ --output output1.xml --log log1.html
+   ```
+   robotframework-metrics can parse multiple xmls at a time. Following is the command
+   ```
+   robotmetrics --inputpath ./Result/ --output "output1.xml,output2.xml" --log log1.html
+   ```
 
-    ```
-    robotmetrics --help
-    ```
-    
-3. RobotFramework Metrics Report __metric-timestamp.html__ file will be created in current folder | `-inputpath` if specified
+   > For more info on command line options use:
 
-Note: From v3.1.4 users can specify __custom_report_name__ instead of __metrics-timestamp.html__ (changes in master)
-```
-robotmetrics -M regression_metrics.html
-```
+   ```
+   robotmetrics --help
+   ```
 
+__Step 3__ RobotFramework Metrics Report __metric-timestamp.html__ file will be created in current folder | `-inputpath` if specified
+
+   Note: From v3.1.6 users can specify __custom_report_name__ instead of __metrics-timestamp.html__
+   ```
+   robotmetrics -M regression_metrics.html
+   ```
 ---
 
 #### Customize Report
@@ -81,22 +84,37 @@ Specify Logo in Robotframework metrics:
      ```
 ---
 
-#### How to Ignore Library Keywords in Metrics Report
- - Use command line options to ignore library keywords
-    ``` 
-    --ignore "Collections,Selenium2Library"
-    ```
- - In Metric report, keywords with type value 'for' and 'foritem' are ignored
- - Following library keywords are ignored in Metrics Report
-    ```
-    ignore_library = [
-     'BuiltIn',
-     'SeleniumLibrary',
-     'String',
-     'Collections',
-     'DateTime',
-    ] 
-    ``` 
+#### Exclude Keywords in Metrics Report
+
+ - From `v3.1.6` users can exclude keywords in metrics report using `--ignorekeywords` or `-k` command
+
+   ```
+   robotmetrics -k True
+   ```
+   > By default `--ignorekeywords` is `False`
+
+---
+
+#### Exclude Logs in Metrics Report
+
+ - From `v3.1.7` users can exclude Logs tab in metrics report using `--ignorelogs` or `-l` command
+
+   ```
+   robotmetrics -l True
+   ```
+   > By default `--ignorelogs` is `False`
+
+---
+
+#### Include Full Suite Name in Metrics Report
+
+ - From `v3.1.7` users can include full suite name in metrics report using `--fullsuitename` or `-s` command
+
+   ```
+   robotmetrics -s True
+   ```
+   > By default `--fullsuitename` is `False`
+
 ---
 
 #### Generate robotframework-metrics after execution
@@ -106,57 +124,31 @@ Execute robotmetrics command after suite or test execution as follows:
  - Create .bat (or) .sh file with following snippet
 
     ```
-    robot test.robot &&
+    robot test.robot &
     robotmetrics [:options]
     ```
 
-    > && is used to execute multiple command's in .bat file
+    > & is used to execute multiple command's in .bat file
 
   - Modify robotmetrics command as required and execute .bat file
-  
+
   - Robotframework metrics will be created after execution
 
 ---
 
-*Performance Improvement (Beta) *
-
- - Do you feel robotmetrics command taking more time to capture metrics? Robotframework-metrics have ability to process metrics in parallel using gevent (which helps in saving time)
- > - Step 1: Install gevent
- > - Step 2: Execute robotmetrics command
-
----
-
-Thanks for using robotframework-metrics!
-
- - What is your opinion of this report?
- - What’s the feature I should add?
-
 If you have any questions / suggestions / comments on the report, please feel free to reach me at
 
  - Email: <a href="mailto:adiralashiva8@gmail.com?Subject=Robotframework%20Metrics" target="_blank">`adiralashiva8@gmail.com`</a> 
- - Slack: <a href="https://robotframework.slack.com/messages/robotframeworkmetrics" target="_blank">`robotframeworkmetrics`</a>
- - LinkedIn: <a href="https://www.linkedin.com/in/shivaprasadadirala/" target="_blank">`shivaprasadadirala`</a>
- - Twitter: <a href="https://twitter.com/ShivaAdirala" target="_blank">`@ShivaAdirala`</a>
-
----
-
-*Credits:*
-
-1. Robotframework [link](https://robot-framework.readthedocs.io/en/v3.0.4/autodoc/robot.result.html)
-2. Stackoverflow [link](http://stackoverflow.com)
-3. Google charts [link](https://developers.google.com/chart/)
-4. DataTable [link](https://datatables.net/examples/basic_init/table_sorting.html)
-5. BeautifulSoup [link](http://beautiful-soup-4.readthedocs.io)
-6. Jquery | JavaScript [link](https://www.jqueryscript.net)
-7. Bootstrap [link](http://getbootstrap.com/docs/4.1/examples/dashboard/)
-8. Icons8 [link](https://icons8.com/)
-9. FontAwesome [link](https://fontawesome.com)
-
-> Note: Robotframework-metrics uses above open source libraries for generating report.
 
 ---
 
 *Special Thanks To:*
+
+*Idea, Guidance and Support:*
+
+ - Steve Fisher
+ - [Goutham Duduka](https://www.linkedin.com/in/goutham-kumar-duduka-45154718/)
+
 
 *Contributors:*
 
@@ -180,7 +172,7 @@ If you have any questions / suggestions / comments on the report, please feel fr
     > - Fixed distorted image
 
 6. [Sreelesh Kunnath](https://www.linkedin.com/in/kunnathsree/)
-    > - Contributed source to specify custom metrics file name (changes will be from v3.1.4)
+    > - Contributed source to specify custom metrics file name
 
 
 *Feedback:*
@@ -190,9 +182,8 @@ If you have any questions / suggestions / comments on the report, please feel fr
 3. [Suresh Parimi](https://www.linkedin.com/in/sparimi/)
 4. [Robotframework community users](https://groups.google.com/forum/#!forum/robotframework-users)
 
-*Thank you for your guidance, support and Idea:*
+---
 
- - Steve
- - [Goutham Duduka](https://www.linkedin.com/in/goutham-kumar-duduka-45154718/)
+:star: repo if you like it
 
 ---

@@ -2,7 +2,6 @@ import os
 import argparse
 from .robotmetrics import generate_report
 from .robotmetrics import IGNORE_TYPES
-from .robotmetrics import IGNORE_LIBRARIES
 from .version import __version__
 
 
@@ -19,16 +18,8 @@ def parse_options():
     general.add_argument(
         '--logo',
         dest='logo',
-        default='https://cdn.pixabay.com/photo/2016/08/02/10/42/wifi-1563009_960_720.jpg',
-        help="User logo (default: dummy wifi image )"
-    )
-
-    general.add_argument(
-        '--ignorelib',
-        dest='ignore',
-        default=IGNORE_LIBRARIES,
-        nargs="+",
-        help="Ignore keywords of specified library in report"
+        default='https://i.ibb.co/9qBkwDF/Testing-Fox-Logo.png',
+        help="User logo (default: dummy image )"
     )
 
     general.add_argument(
@@ -71,6 +62,34 @@ def parse_options():
         dest='output',
         default="output.xml",
         help="Name of output.xml"
+    )
+
+    general.add_argument(
+        '-k', '--ignorekeywords',
+        dest='ignorekeywords',
+        default="False",
+        help="Ignore keywords in metrics report"
+    )
+
+    general.add_argument(
+        '-l', '--ignorelogs',
+        dest='ignorelogs',
+        default="False",
+        help="Ignore logs in metrics report"
+    )
+
+    general.add_argument(
+        '-s', '--fullsuitename',
+        dest='fullsuitename',
+        default="False",
+        help="Use full suite name in report"
+    )
+
+    general.add_argument(
+        '-t', '--showtags',
+        dest='showtags',
+        default="False",
+        help="Display tag name is test metrics"
     )
 
     args = parser.parse_args()
