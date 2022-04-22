@@ -1,4 +1,5 @@
 from robot.api import ResultVisitor
+from robot.utils.markuputils import html_format
 
 
 class SuiteResults(ResultVisitor):
@@ -20,7 +21,9 @@ class SuiteResults(ResultVisitor):
 
             suite_json = {
                 "Name" : suite.longname,
+                "Id" : suite.id,
                 "Status" : suite.status,
+                "Documentation" : html_format(suite.doc),
                 "Total" : stats.total,
                 "Pass" : stats.passed,
                 "Fail" : stats.failed,

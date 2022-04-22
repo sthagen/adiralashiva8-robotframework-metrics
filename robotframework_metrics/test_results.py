@@ -1,4 +1,5 @@
 from robot.api import ResultVisitor
+from robot.utils.markuputils import html_format
 
 
 class TestResults(ResultVisitor):
@@ -10,9 +11,11 @@ class TestResults(ResultVisitor):
         test_json = {
             "Suite Name" : test.parent,
             "Test Name" : test,
+            "Test Id" : test.id,
             "Status" : test.status,
+            "Documentation" : html_format(test.doc),
             "Time" : test.elapsedtime,
-            "Message" : test.message,
+            "Message" : html_format(test.message),
             "Tags" : test.tags 
         }
         self.test_list.append(test_json)

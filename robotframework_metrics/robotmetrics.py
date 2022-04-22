@@ -1,5 +1,6 @@
 import os
 import logging
+import codecs
 from datetime import datetime
 from robot.api import ExecutionResult
 from jinja2 import Environment, FileSystemLoader, Template
@@ -51,6 +52,8 @@ def generate_report(opts):
             curr_path = os.path.join(path, curr_name)
             output_names.append(curr_path)
 
+    log_name = opts.log_name
+
     # copy the list of output_names onto the one of required_files; the latter may (in the future)
     # contain files that should not be processed as output_names
     required_files = list(output_names)
@@ -101,6 +104,11 @@ def generate_report(opts):
     else:
         hide_tags = "hide"
 
+    if opts.showdocs == "True":
+        hide_docs = ""
+    else:
+        hide_docs = "hide"
+
     logging.info(" 4 of 4: Preparing data for dashboard")
     dashboard_obj = Dashboard()
     suite_stats = dashboard_obj.get_suite_statistics(suite_list)
@@ -111,12 +119,14 @@ def generate_report(opts):
     # print(suite_error_stats)
 
     logging.info(" Writing results to html file")
-    with open(result_file_name, 'w') as fh:
+    with codecs.open(result_file_name,'w','utf-8') as fh:
         fh.write(template.render(
             hide_tags = hide_tags,
+            hide_docs = hide_docs,
             # hide_keyword_menu = hide_keyword_menu,
             hide_kw_times_menu = hide_kw_times_menu,
             suite_stats = suite_stats,
+            log_name = log_name,
             test_stats = test_stats,
             kw_stats = kw_stats,
             suites = suite_list,
